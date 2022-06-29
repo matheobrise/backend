@@ -50,19 +50,25 @@ router.get('/getInfo/:id', (req: any, res: any) => {
 
 router.post('/login', async (req, res) => {
   try {
+    console.log(req.body);
+
     const { email, password, roleId } = req.body;
     const user = await getUserByEmail(email);
 
     if (user != null) {
       const passwordValidate = await bcrypt.compare(password, user.password);
+      console.log(user.password);
+      console.log(passwordValidate);
 
       if (!passwordValidate) {
         res.status(203).json('Invalid password');
       } else {
+        console.log(user);
+
         const roles = await getAllRoles();
         const roleUser = roles.find(r => r.id === user.roleId);
         if (roleId != undefined) {
-          if (roleUser?.name != roleId) {
+          if (roleUser?.name != roleId && roleUser?.id != roleId) {
             res
               .status(203)
               .json("Vous n'avez pas les droits pour vous connecter.");
@@ -124,11 +130,15 @@ router.post('/login', async (req, res) => {
       res.status(203).send('User not found');
     }
   } catch (err: any) {
+    console.log(err);
+
     res.json(err);
   }
 });
 
 router.post('/create', async (req, res, next) => {
+  console.log(req.body);
+
   try {
     const userInput: IUser = {
       name: req.body.name,
@@ -142,6 +152,7 @@ router.post('/create', async (req, res, next) => {
       phoneNumber: req.body?.phoneNumber,
       sponsorshipCode: req.body?.sponsorshipCode,
     };
+    console.log(userInput);
 
     if (req.body?.sponsorshipCode != '') {
       const userRole = await getUserByEmail(userInput.sponsorshipCode);
