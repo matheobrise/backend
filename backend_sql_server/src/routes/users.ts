@@ -166,7 +166,7 @@ router.post('/create', async (req, res, next) => {
       res.json("User's role not found");
     else if (err?.meta?.target == 'User_email_key')
       res.json('User already exists');
-    else res.json('Error when creating the user');
+    else res.json('Error when creating the user' + err);
   }
 });
 
