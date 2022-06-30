@@ -154,7 +154,10 @@ router.post('/create', async (req, res, next) => {
     };
     console.log(userInput);
 
-    if (req.body?.sponsorshipCode != '') {
+    if (
+      req.body?.sponsorshipCode != '' &&
+      req.body?.sponsorshipCode != undefined
+    ) {
       const userRole = await getUserByEmail(userInput.sponsorshipCode);
       if (userRole?.roleId != req.body.roleId) {
         res.send(
