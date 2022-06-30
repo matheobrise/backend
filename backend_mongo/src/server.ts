@@ -79,13 +79,58 @@ router.use((req, res) => {
 
 const httpServer = http.createServer(router);
 const options = {
-  /* ... */
+  cors: {
+    origin: [
+      'http://localhost:8081',
+      'http://localhost:8080',
+      'http://localhost:8082',
+      'http://10.117.129.194',
+      'http://10.117.129.194:8082',
+      'http://10.117.129.194:8080',
+      'http://10.117.129.194:8081',
+    ],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['X-Server-Select'],
+    transports: ['websocket', 'polling'],
+    credentials: true,
+  },
+  allowEIO3: true,
 };
-// // eslint-disable-next-line @typescript-eslint/no-var-requires
-// const io = require('socket.io')(httpServer, options);
-// io.on('connection', socket => {
-//   /* ... */
-// });
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const io = require('socket.io')(httpServer, options);
+io.on('connection', (socket: any) => {
+  console.log(socket.id);
+  socket.emit('messageChannel', 'datagyyggg');
+  socket.on('messageChannel', (data: any) => {
+    console.log('coucou');
+    io.emit('messageChannel2', 'fds');
+  });
+
+  socket.on('OrderCreate', (msg: any) => {
+    console.log('OrderCreate');
+    console.log(msg);
+    io.emit('OrderIsCreate', 'OrderIsCreate');
+  });
+
+  socket.on('OrderAcceptRestaurant', (msg: any) => {
+    console.log('OrderAcceptRestaurant');
+    console.log(msg);
+    io.emit('OrderIsAcceptRestaurant', 'OrderIsAcceptRestaurant');
+  });
+
+  socket.on('OrderAcceptLivreur', (msg: any) => {
+    console.log('OrderAcceptLivreur');
+    console.log(msg);
+    io.emit('OrderIsAcceptLivreur', 'OrderIsAcceptLivreur');
+  });
+
+  socket.on('OrderLivre', (msg: any) => {
+    console.log('OrderLivre');
+    console.log(msg);
+    io.emit('OrderIsLivre', 'OrderIsLivre');
+  });
+});
+
 httpServer.listen(config.server.port, () =>
   logging.info(
     NAMESPACE,
